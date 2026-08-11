@@ -143,6 +143,7 @@ def required_sections(tier: str) -> tuple[str, ...]:
             "acceptance criteria",
             "test and recovery",
             "necessary uml",
+            "changelog",
             "verification evidence",
         )
     standard = (
@@ -157,6 +158,7 @@ def required_sections(tier: str) -> tuple[str, ...]:
         "failure, security, and observability",
         "test portfolio and tdd slices",
         "traceability",
+        "changelog",
         "verification evidence",
     )
     if tier == "high-risk":
@@ -213,6 +215,17 @@ def validate(text: str, phase: str) -> tuple[str | None, list[ValidationError]]:
     status = metadata.get("status")
     placeholder_text = without_fenced_code(text)
 
+    if re.search(
+        r"^\s*(?:~{3,}|`{3,})(?:plantuml|puml)\b",
+        text,
+        re.MULTILINE | re.IGNORECASE,
+    ):
+        add_once(
+            errors,
+            "E_UML_FORMAT",
+            "all UML diagrams must use a Mermaid fence",
+        )
+
     for key in ("change_id", "title", "risk_tier", "status"):
         if not usable(metadata.get(key)):
             add_once(errors, "E_META_REQUIRED", f"missing or placeholder metadata: {key}")
@@ -226,6 +239,21 @@ def validate(text: str, phase: str) -> tuple[str | None, list[ValidationError]]:
         for title in required_sections(tier):
             if title not in present_headings:
                 add_once(errors, "E_SECTION", f"missing section: {title}")
+
+    changelog = section_body(text, "Changelog")
+    if changelog:
+        if "CHANGELOG.md" not in changelog:
+            add_once(
+                errors,
+                "E_CHANGELOG_PATH",
+                "changelog section must name repository-root CHANGELOG.md",
+            )
+        if "[Unreleased]" not in changelog:
+            add_once(
+                errors,
+                "E_CHANGELOG_UNRELEASED",
+                "changelog section must target [Unreleased]",
+            )
 
     requirement_ids = REQ_DEFINITION.findall(text)
     acceptance_ids = AC_DEFINITION.findall(text)
@@ -247,8 +275,35 @@ def validate(text: str, phase: str) -> tuple[str | None, list[ValidationError]]:
             )
 
     diagrams = diagram_contexts(text)
-    if diagrams:
-        for index, context in enumerate(diagrams, start=1):
+    decision_diagrams: list[tuple[int, str]] = []
+    for index, context in enumerate(diagrams, start=1):
+        role = field_value(context, "diagram_role") or "decision"
+        if role == "reader-aid":
+            purpose = field_value(context, "reader_aid_purpose")
+            if not usable(purpose):
+                add_once(
+                    errors,
+                    "E_READER_AID_PURPOSE",
+                    f"reader-aid diagram {index} needs reader_aid_purpose",
+                )
+            if field_value(context, "decision_question") or field_value(context, "traces"):
+                add_once(
+                    errors,
+                    "E_READER_AID_TRACE",
+                    f"reader-aid diagram {index} must not declare decision_question or traces",
+                )
+            continue
+        if role != "decision":
+            add_once(
+                errors,
+                "E_DIAGRAM_ROLE",
+                f"diagram {index} role must be decision or reader-aid",
+            )
+            continue
+        decision_diagrams.append((index, context))
+
+    if decision_diagrams:
+        for index, context in decision_diagrams:
             decision = field_value(context, "decision_question")
             traces = field_value(context, "traces")
             if not usable(decision):
@@ -313,6 +368,7 @@ def validate(text: str, phase: str) -> tuple[str | None, list[ValidationError]]:
             "traceability",
             "rollout, rollback, and remaining risks",
             "staged rollout, monitoring, and rollback",
+            "changelog",
             "verification evidence",
         )
         completion_text = without_fenced_code(
@@ -331,6 +387,7 @@ def validate(text: str, phase: str) -> tuple[str | None, list[ValidationError]]:
             "GREEN evidence",
             "Refactor or exception",
             "Fresh verification",
+            "Changelog evidence",
             "Remaining risks",
         ]
         if tier == "high-risk":

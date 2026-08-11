@@ -1,39 +1,46 @@
 ---
 name: daedalus
-description: Guide risk-tiered software development from a Software Design Document through necessary UML, test-driven vertical slices, fresh verification, and living-design updates. Use whenever Codex is asked to implement or modify production code—including features, bug fixes, refactors, integrations, migrations, performance or security changes—or to create a technical design that will lead to code. Do not use for read-only explanation, pure research, or documentation-only work that cannot change production behavior.
+description: Guide risk-tiered software development from a living Software Design Document through deterministic necessary-UML routing, test-driven vertical slices, design reconciliation, and fresh outcome evidence. Use whenever Codex is asked to implement or modify production code—including features, bug fixes, refactors, integrations, migrations, performance or security changes—or to create a technical design that will lead to code. Do not use for read-only explanation, pure research, or documentation-only work that cannot change production behavior.
 ---
 
 # Daedalus
 
-Build from explicit intent and evidence. Keep the process proportional: a localized fix gets a
-one-page artifact; a risky boundary or migration gets deeper design and verification.
+Build from explicit intent and executable evidence. SDD defines what and why; TDD proves each
+behavior and returns implementation discoveries to the living design.
 
-## Non-negotiable invariants
+## Invariants
 
-- Write or update a tier-appropriate Software Design Document before production code.
-- Link observable outcomes through requirement and acceptance IDs to tests, implementation, and evidence.
-- Create UML only to answer a named design question. Record a rationale when no diagram is needed.
-- Observe RED for the intended missing behavior before GREEN. Do not count syntax, fixture, import, or environment failures.
-- Treat the SDD as living: write back verified design drift during every slice CHECK.
-- Do not create a branch or worktree, install dependencies, use network access, or mutate external state unless the user separately authorizes it.
-- Treat any untagged gate as a workflow defect; it does not apply to lite work.
+- Write or update a tier-appropriate SDD before production code.
+- Link observable outcomes through REQ and AC IDs to tests, implementation, and fresh evidence.
+- Use the `required／optional／omit` UML routing rule; risk tier alone never mandates a diagram.
+- Write every decision or reader-aid UML diagram in Mermaid; do not use PlantUML or PUML.
+- Observe the intended missing behavior in RED before GREEN. Syntax, import, fixture, permission,
+  or unavailable-environment failures are not behavioral RED.
+- Reconcile design after every vertical slice; update or remove stale SDD／UML content.
+- Create or update the repository-root `CHANGELOG.md` in the same diff as every production change,
+  and keep the pending entry under `[Unreleased]` until release.
+- Respect project instructions and user authority. This Skill grants no permission to create Git
+  topology, install dependencies, access networks, or mutate external systems.
+- Preserve unrelated user changes and never claim completion from stale evidence.
 
 ## Workflow
 
-### 1. Inspect and classify
+### 1. FRAME — outcome and risk
 
-Read project instructions, existing design documents, affected code, tests, public contracts, and
-the smallest relevant history. State goal, non-goals, expected outcomes, affected paths, recovery,
-and uncertainty.
+Read project instructions, current design, affected code, tests, contracts, and the smallest
+relevant history. State goal, non-goals, observable outcomes, affected paths, recovery, and
+uncertainty.
 
-Read [references/risk-and-uml.md](references/risk-and-uml.md) completely. Select lite, standard,
-or high-risk and record tier_rationale. When uncertain, use standard. Never self-downgrade a
+Inspect the repository-root `CHANGELOG.md`. If it is absent, plan to create it. Record the intended
+`[Unreleased]` entry in the SDD without reconstructing unsupported historical release details.
+
+Read [references/risk-and-uml.md](references/risk-and-uml.md) completely. Select lite, standard, or
+high-risk and record `tier_rationale`. When uncertain, use standard. Never self-downgrade a clear
 security, trust-boundary, irreversible, or migration risk.
 
-### 2. Create the SDD
+### 2. MODEL — living SDD and necessary UML
 
-Reuse the repository's current design location and format when it supports the required fields.
-Otherwise create docs/sdd/<change-id>.md. To scaffold the bundled format, run:
+Reuse the repository's current design format when it supports the required fields. Otherwise run:
 
 ~~~text
 python3 <skill-dir>/scripts/init_sdd.py \
@@ -43,64 +50,81 @@ python3 <skill-dir>/scripts/init_sdd.py \
   --output <project>/docs/sdd/<change-id>.md
 ~~~
 
-Read [references/sdd-schema.md](references/sdd-schema.md) completely before filling the artifact.
-Separate WHAT—goal, requirement, acceptance, expected outcome—from HOW—options, decision,
-contract, diagram, rollout. Use stable REQ-NNN and AC-NNN IDs.
+Read [references/sdd-schema.md](references/sdd-schema.md) completely. Separate WHAT—goal,
+requirement, acceptance, expected outcome—from HOW—options, decision, contract, diagram, rollout.
+Use stable REQ-NNN and AC-NNN IDs.
 
-Do not write production code until the ready gate passes:
+For every UML type, select `required`, `optional`, or `omit` using the observable triggers in
+[references/risk-and-uml.md](references/risk-and-uml.md). Decision UML must describe the software
+being built, not this workflow or the SDD document lifecycle. Draw the smallest set that resolves
+genuine ambiguities; otherwise record one concrete `no_diagram_rationale`.
+All selected UML, including optional reader aids, must be Mermaid.
+
+Do not write production code until the structural ready gate passes:
 
 ~~~text
 python3 <skill-dir>/scripts/validate_sdd.py <sdd-path> --phase ready
 ~~~
 
-The bundled validator checks structure, not correctness. Independently challenge assumptions,
-contracts, failure paths, test oracle, recovery, and whether each diagram answers its question.
+The validator checks structure, not correctness. Independently challenge assumptions, contracts,
+failure paths, recovery, oracle strength, and each diagram's routing trigger.
 
-### 3. Select the test portfolio
+### 3. BIND — acceptance to executable oracle
 
-Read [references/tdd-and-verification.md](references/tdd-and-verification.md) completely. Define an
-outer acceptance or contract test for the observable outcome, then select inner unit, integration,
-E2E, property, mutation, security, performance, or migration checks by risk.
+Read [references/tdd-and-verification.md](references/tdd-and-verification.md) completely. Map each AC
+to the nearest observable outer oracle, then choose the smallest next vertical slice and its inner
+test portfolio.
 
 For brownfield work, characterize only adjacent behavior that must remain unchanged. Define the
-defect itself with a new regression RED. Never preserve a bug as characterization.
+defect itself with a new regression RED; never preserve a bug as desired behavior.
 
-### 4. Deliver vertical TDD slices
+### 4. PROVE — intended RED
 
-For one observable behavior at a time:
+Add the smallest behavioral test for one AC. Run it before production code and record the command,
+failure, and why it proves the requested behavior is missing. For standard and high-risk, name one
+plausible wrong result and confirm the assertion rejects it. Strengthen with negative, boundary,
+property, or mutation checks when risk warrants them.
 
-1. **RED:** Add the smallest behavioral test. Run it and record the command, failure, and why the
-   failure proves missing behavior. For standard and high-risk, name one plausible wrong result
-   and confirm the assertion rejects it; strengthen with negative, property, or mutation checks
-   when needed.
-2. **GREEN:** Make the smallest production change that passes the target behavior. Run focused
-   and affected existing tests.
-3. **REFACTOR:** Improve names, duplication, and boundaries only while green; rerun fresh checks.
-4. **CHECK:** Update traceability and evidence. If implementation or tests reveal a design error,
-   return to the SDD, update the decision or UML, and revalidate ready before continuing.
+### 5. BUILD — GREEN and REFACTOR
 
-Do not silently retry a flaky test until green. Fix nondeterminism or quarantine it only with a
-tracked reason and evidence that it does not invalidate this slice's oracle.
+Make the smallest production change that satisfies the target behavior. Run the focused test and
+affected existing tests. Improve names, duplication, seams, and boundaries only while green, then
+rerun fresh checks after the refactor.
 
-### 5. Verify the expected result
+Do not silently retry flaky tests until green. Fix nondeterminism or quarantine it only with a
+tracked reason, exit condition, and evidence that the target oracle remains valid.
 
-Apply the tier-specific completion gate:
+### 6. RECONCILE — return evidence to design
 
-- **lite:** one-page artifact, one focused regression or behavior test, actual diff, fresh affected
-  checks, and recovery.
-- **standard:** all applicable traceability, contract or integration evidence, SDD consistency,
-  fresh build／lint／type／test results, realistic outcome verification, and remaining risks.
-- **high-risk:** all standard evidence plus the applicable independent review, security,
+Update REQ／AC traceability, implementation paths, evidence, remaining risks, and recovery. Compare
+the actual implementation with every affected decision and diagram. Update or remove stale UML.
+Update the repository-root `CHANGELOG.md` with the externally observable or maintainer-relevant
+change; keep implementation noise out of the entry.
+
+If evidence invalidates a requirement, contract, option, risk classification, or UML decision,
+return to MODEL, revise the SDD, pass the ready gate again, then create the next RED. If the design
+still holds and accepted behavior remains, return to BIND for the next slice.
+
+### 7. SEAL — fresh outcome proof
+
+Apply the proportional completion gate:
+
+- **lite:** one-page artifact, one focused behavior or regression test, actual diff, fresh affected
+  checks, realistic outcome inspection, and recovery.
+- **standard:** applicable traceability, contract／integration evidence, SDD consistency, fresh
+  build／lint／type／test results, realistic outcome inspection, and remaining risks.
+- **high-risk:** standard evidence plus only the applicable independent review, security,
   performance, migration rehearsal, rollout, monitoring, and rollback proof.
 
-Set SDD status to complete, replace placeholders with evidence, and run:
+Set status to complete, replace unresolved completion markers with evidence, and run:
 
 ~~~text
 python3 <skill-dir>/scripts/validate_sdd.py <sdd-path> --phase complete
 ~~~
 
-Inspect the actual diff and external state. Passing tests alone is not proof that the requested
-outcome exists.
+Inspect the actual diff and nearest realistic outcome. Passing tests alone is not proof that the
+requested result exists. Confirm the same diff contains the SDD's `CHANGELOG.md` entry under
+`[Unreleased]`; do not mark the SDD complete when changelog evidence is missing.
 
 ## Exceptions and stop conditions
 
@@ -108,20 +132,20 @@ outcome exists.
   it or place its behavior behind a failing contract test before production use.
 - Generated code, pure documentation, and declarative configuration may use schema, snapshot,
   dry-run, smoke, or integration evidence instead of a unit RED. Record the exception and
-  alternate oracle; standard and high-risk CHECK must challenge the justification.
-- Stop and ask for direction when requirements conflict, a required outcome has no safe oracle,
-  a high-risk irreversible action lacks rollback, or authority is needed for an external write.
-- Preserve unrelated user changes. Never use completion language without fresh evidence.
+  alternate oracle; standard and high-risk RECONCILE must challenge the justification.
+- Stop for direction when requirements conflict, a required outcome has no safe oracle, a
+  high-risk irreversible action lacks rollback, or new authority is needed for an external write.
 
 ## Bundled resources
 
-- [references/risk-and-uml.md](references/risk-and-uml.md): tier definitions, operational terms,
-  escalation triggers, and UML selection.
-- [references/sdd-schema.md](references/sdd-schema.md): artifact schema, ready／complete gates, and
-  traceability rules.
-- [references/tdd-and-verification.md](references/tdd-and-verification.md): RED quality, portfolio
-  selection, exceptions, and outcome evidence.
+- [references/risk-and-uml.md](references/risk-and-uml.md): tier definitions and deterministic UML
+  routing.
+- [references/sdd-schema.md](references/sdd-schema.md): artifact schema, gates, and traceability.
+- [references/tdd-and-verification.md](references/tdd-and-verification.md): oracle selection, TDD,
+  exceptions, and outcome evidence.
 - [scripts/init_sdd.py](scripts/init_sdd.py): scaffold a tier-specific SDD without overwriting by
   default.
 - [scripts/validate_sdd.py](scripts/validate_sdd.py): deterministic structural ready／complete gate.
-- assets/templates/: source templates consumed by the scaffold script.
+- [scripts/self_test.py](scripts/self_test.py): exercise scaffold and validation from the installed
+  payload.
+- `assets/templates/` and `assets/examples/`: bundled scaffolds and standalone evidence fixture.

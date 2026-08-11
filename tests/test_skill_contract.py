@@ -41,8 +41,10 @@ class SkillContractTests(unittest.TestCase):
         self.assertIn("RED", text)
         self.assertIn("GREEN", text)
         self.assertIn("REFACTOR", text)
-        self.assertIn("Do not create a branch or worktree", text)
-        self.assertIn("untagged gate", text)
+        self.assertIn("RECONCILE", text)
+        self.assertIn("required／optional／omit", text)
+        self.assertIn("Mermaid", text)
+        self.assertIn("grants no permission", text)
 
     def test_required_resources_exist_and_are_linked(self) -> None:
         skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
@@ -52,6 +54,7 @@ class SkillContractTests(unittest.TestCase):
             "references/tdd-and-verification.md",
             "scripts/init_sdd.py",
             "scripts/validate_sdd.py",
+            "scripts/self_test.py",
         ]
         for relative in relative_paths:
             with self.subTest(relative=relative):
@@ -62,14 +65,24 @@ class SkillContractTests(unittest.TestCase):
         text = (SKILL / "agents" / "openai.yaml").read_text(encoding="utf-8")
         self.assertIn('$daedalus', text)
 
-    def test_readme_discloses_forward_test_provenance(self) -> None:
+    def test_readme_documents_standalone_install_and_verification(self) -> None:
         text = (ROOT / "README.md").read_text(encoding="utf-8")
         normalized = " ".join(text.split())
 
-        self.assertIn("global Eureka", normalized)
-        self.assertIn("64k", normalized)
-        self.assertIn("96k", normalized)
-        self.assertIn("not attributable to Daedalus alone", normalized)
+        self.assertIn("timshan/daedalus", normalized)
+        self.assertIn("daedalus@daedalus", normalized)
+        self.assertIn("scripts/self_test.py", normalized)
+        self.assertNotIn("skill-lifecycle-control", normalized)
+
+    def test_skill_requires_repository_changelog_in_the_same_change(self) -> None:
+        skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        changelog = ROOT / "CHANGELOG.md"
+
+        self.assertIn("repository-root `CHANGELOG.md`", skill_text)
+        self.assertIn("`[Unreleased]`", skill_text)
+        self.assertIn("same diff", skill_text)
+        self.assertTrue(changelog.is_file())
+        self.assertIn("## [Unreleased]", changelog.read_text(encoding="utf-8"))
 
     def test_scripts_do_not_import_network_shell_or_git_process_modules(self) -> None:
         forbidden = {"subprocess", "socket", "urllib", "http", "requests"}

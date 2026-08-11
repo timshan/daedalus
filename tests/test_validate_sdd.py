@@ -47,6 +47,11 @@ def lite_document(*, tier: str = "lite", status: str = "design-ready") -> str:
 
         no_diagram_rationale: Local pure-function change with no boundary, lifecycle, schema, or deployment decision.
 
+        ## Changelog
+
+        CHANGELOG.md impact: `[Unreleased]` records tenant-aware cache keys.
+        Changelog evidence: the same diff contains the entry.
+
         ## Verification evidence
 
         RED evidence: test fails on the old key format.
@@ -126,6 +131,11 @@ def standard_document(*, status: str = "design-ready", pending: bool = False) ->
         ## Rollout, rollback, and remaining risks
 
         Roll out behind configuration. Roll back by disabling the adapter.
+
+        ## Changelog
+
+        CHANGELOG.md: `[Unreleased]` records the billing adapter in the same diff.
+        Changelog evidence: the same diff contains the entry.
 
         ## Verification evidence
 
@@ -312,6 +322,62 @@ class ValidateSddCliTests(unittest.TestCase):
         self.assertEqual(result.returncode, 1)
         self.assertIn("E_DIAGRAM_TRACE", result.stdout)
 
+    def test_reader_aid_is_explicit_and_does_not_satisfy_the_uml_gate(self) -> None:
+        reader_aid = textwrap.dedent(
+            """\
+            diagram_role: reader-aid
+            reader_aid_purpose: Help a new maintainer see the authoring loop.
+
+            ~~~mermaid
+            flowchart LR
+                Draft --> Complete
+            ~~~
+
+            no_diagram_rationale: The software change has no unresolved boundary, interaction, data, runtime-state, branching, or deployment decision.
+            """
+        )
+        content = standard_document().replace(
+            "decision_question: Where does the external billing boundary live?\n"
+            "traces: REQ-001, AC-001\n\n"
+            "~~~mermaid\n"
+            "sequenceDiagram\n"
+            "    App->>BillingPort: charge\n"
+            "    BillingPort-->>App: receipt\n"
+            "~~~",
+            reader_aid.strip(),
+        )
+        result = self.run_cli(content, phase="ready")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+        missing_rationale = content.replace(
+            "no_diagram_rationale: The software change has no unresolved boundary, interaction, data, runtime-state, branching, or deployment decision.",
+            "rationale intentionally absent",
+        )
+        result = self.run_cli(missing_rationale, phase="ready")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("E_DIAGRAM_RATIONALE", result.stdout)
+
+    def test_reader_aid_rejects_decision_trace_metadata(self) -> None:
+        content = standard_document().replace(
+            "decision_question: Where does the external billing boundary live?",
+            "diagram_role: reader-aid\n"
+            "reader_aid_purpose: Explain the authoring loop.\n"
+            "decision_question: This must not be treated as a software decision.",
+        )
+        result = self.run_cli(content, phase="ready")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("E_READER_AID_TRACE", result.stdout)
+
+    def test_all_uml_diagrams_must_use_mermaid(self) -> None:
+        for language in ("plantuml", "puml"):
+            with self.subTest(language=language):
+                content = standard_document().replace(
+                    "~~~mermaid", f"~~~{language}", 1
+                )
+                result = self.run_cli(content, phase="ready")
+                self.assertEqual(result.returncode, 1)
+                self.assertIn("E_UML_FORMAT", result.stdout)
+
     def test_complete_phase_rejects_placeholders(self) -> None:
         result = self.run_cli(
             standard_document(status="complete", pending=True), phase="complete"
@@ -323,6 +389,24 @@ class ValidateSddCliTests(unittest.TestCase):
         result = self.run_cli(standard_document(), phase="complete")
         self.assertEqual(result.returncode, 1)
         self.assertIn("E_COMPLETE_STATUS", result.stdout)
+
+    def test_complete_phase_requires_changelog_evidence(self) -> None:
+        content = standard_document(status="complete").replace(
+            "## Changelog\n\n"
+            "CHANGELOG.md: `[Unreleased]` records the billing adapter in the same diff.\n"
+            "Changelog evidence: the same diff contains the entry.\n\n",
+            "",
+        )
+        result = self.run_cli(content, phase="complete")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("E_SECTION", result.stdout)
+        self.assertIn("changelog", result.stdout)
+
+    def test_changelog_section_requires_unreleased_target(self) -> None:
+        content = standard_document().replace("[Unreleased]", "future release notes")
+        result = self.run_cli(content, phase="ready")
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("E_CHANGELOG_UNRELEASED", result.stdout)
 
     def test_complete_standard_document_passes(self) -> None:
         result = self.run_cli(standard_document(status="complete"), phase="complete")

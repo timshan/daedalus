@@ -68,9 +68,12 @@ class InitSddCliTests(unittest.TestCase):
             self.assertIn("risk_tier: standard", text)
             self.assertIn("## Design and contracts", text)
             self.assertIn("## Necessary UML", text)
-            self.assertIn("decision_question:", text)
+            self.assertIn("required, optional, or omit", text)
+            self.assertIn("no_diagram_rationale:", text)
+            self.assertNotIn("sequenceDiagram", text)
             self.assertIn("## Test portfolio and TDD slices", text)
             self.assertIn("## Traceability", text)
+            self.assertIn("## Changelog", text)
 
     def test_existing_output_is_not_overwritten_without_force(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

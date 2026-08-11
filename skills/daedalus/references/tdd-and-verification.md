@@ -37,10 +37,11 @@ existing tests. Avoid speculative abstractions and unrelated cleanup.
 While green, improve names, duplication, seams, and boundaries. Rerun fresh checks after the
 refactor; earlier green output is stale evidence.
 
-### CHECK
+### RECONCILE
 
 Update REQ／AC traceability, implementation path or diff, and evidence. If the slice invalidates a
-design assumption, update SDD／UML／decision and pass ready again.
+design assumption, return to MODEL, update SDD／UML／decision, and pass ready again before the next
+RED. If the design holds, return to BIND for the next accepted slice or proceed to SEAL.
 
 ## Portfolio escalation
 
@@ -76,5 +77,5 @@ design assumption, update SDD／UML／decision and pass ready again.
 
 Run the applicable test, lint, typecheck, build, security, benchmark, or rehearsal command after
 the final change. Inspect the actual diff and the nearest realistic outcome. Record command,
-result, timestamp when useful, remaining risk, and recovery. Do not claim complete from memory,
-old output, or Agent confidence.
+result, timestamp when useful, remaining risk, recovery, and the repository-root `CHANGELOG.md`
+entry under `[Unreleased]`. Do not claim complete from memory, old output, or Agent confidence.

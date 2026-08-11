@@ -51,13 +51,11 @@ TBD
 
 ## Necessary UML
 
-decision_question: TBD
-traces: REQ-001, AC-001
+Route each of context／component, sequence, class／domain, state machine, activity, and deployment as
+required, optional, or omit using `references/risk-and-uml.md`. Every selected UML must use
+Mermaid. Remove this guidance before ready.
 
-~~~mermaid
-sequenceDiagram
-    ParticipantA->>ParticipantB: TBD
-~~~
+Routing result: TBD
 
 no_diagram_rationale: TBD
 
@@ -84,10 +82,10 @@ no_diagram_rationale: TBD
 
 Outer acceptance or contract oracle: TBD
 
-1. RED: pending
-2. GREEN: pending
-3. REFACTOR: pending
-4. CHECK: pending
+1. FRAME／MODEL: pending
+2. BIND／PROVE RED: pending
+3. BUILD GREEN／REFACTOR: pending
+4. RECONCILE／SEAL: pending
 
 Special evidence: security／performance／migration／availability as applicable: TBD
 
@@ -103,6 +101,12 @@ Special evidence: security／performance／migration／availability as applicabl
 - Monitoring and threshold: TBD
 - Rollback trigger and command or procedure: TBD
 - Independent review or approval boundary: TBD
+
+## Changelog
+
+CHANGELOG.md impact: TBD; record the pending change under `[Unreleased]`.
+
+Changelog evidence: pending
 
 ## Verification evidence
 

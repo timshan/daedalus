@@ -1,6 +1,6 @@
 {
   "name": "daedalus",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Risk-tiered SDD, necessary UML, and test-first software development workflow.",
   "author": {
     "name": "Tim Shan",

@@ -32,7 +32,18 @@ Recovery: TBD
 
 ## Necessary UML
 
+Route all six types as required, optional, or omit. Lite does not require a diagram merely because
+it is a development task. Every selected UML must use Mermaid. Remove this guidance before ready.
+
+Routing result: TBD
+
 no_diagram_rationale: TBD
+
+## Changelog
+
+CHANGELOG.md impact: TBD; record the pending change under `[Unreleased]`.
+
+Changelog evidence: pending
 
 ## Verification evidence
 
