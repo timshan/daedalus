@@ -114,8 +114,8 @@ Outer acceptance or contract oracle: run the README commands verbatim in an empt
 |---|---|---|---|---|
 | REQ-001, REQ-003 | AC-001, AC-006 | tests/test_public_install_contract.py | .agents/plugins/marketplace.json; .codex-plugin/plugin.json | Focused contract 7 tests passed; wrong identity fixture was rejected. |
 | REQ-002 | AC-002, AC-006 | tests/test_public_install_contract.py | README.md | Exact ordered commands and single-command counts passed; Codex 0.147.0 help confirms both argument forms. |
-| REQ-004 | AC-003, AC-007 | tests/test_public_install_contract.py; Ariadne independence | lifecycle.json | Exact allowlist and standalone command regression passed; final independence is a release gate. |
-| REQ-005 | AC-004, AC-007 | tests/test_public_install_contract.py; installed self-test | skills/daedalus/scripts/self_test.py; skills/daedalus/assets/examples/standalone-standard-complete.md | Repository probe returned `SELF_TEST_OK scaffold=standard complete_example=valid`; final installed-cache execution is a release gate. |
+| REQ-004 | AC-003, AC-007 | tests/test_public_install_contract.py; Ariadne independence | lifecycle.json | Exact allowlist regression passed; isolated artifact payload SHA-256 is `e0187339b69b8c93600e4f740dbc81c6ec7000f1f9d0bac937f6f29549357351`. |
+| REQ-005 | AC-004, AC-007 | tests/test_public_install_contract.py; installed self-test | skills/daedalus/scripts/self_test.py; skills/daedalus/assets/examples/standalone-standard-complete.md | `daedalus@ariadne-standalone` 1.0.1 was the sole enabled Plugin, installed-cache self-test passed 1/1, and artifact SHA-256 is `260f1973d16c91ae83091c5b3705173575e6c28e4b53bdf74a7ebb460dadea48`. |
 | REQ-006 | AC-005 | tests/test_public_install_contract.py | CHANGELOG.md; README.md; docs/SDD.md; docs/sdd/DAEDALUS-PLUGIN-001.md | Documentation scan and changelog assertions passed. |
 
 ## Rollout, rollback, and remaining risks
@@ -124,12 +124,12 @@ Rollout: implement and commit the candidate on the isolated clone's `develop`; r
 
 Rollback: before external writes, discard the isolated clone or revert its commit. After release, keep v1.0.0 immutable and recover by reinstalling it; do not remove or rewrite v1.0.1. Canonical develop conflict resolution remains recoverable through the single merge commit and its first parent.
 
-Remaining risks: isolated exact-artifact installation, public Git installation, and GitHub Release byte identity require the later lifecycle gates; external publication still requires exact authorization. Historical evidence was wording-sanitized without changing its recorded outcomes.
+Remaining risks: public Git installation and GitHub Release byte identity require the post-authorization lifecycle gates; external publication still requires exact authorization. Historical evidence was wording-sanitized without changing its recorded outcomes.
 
 ## Verification evidence
 
 - RED evidence: `python3 -B -m unittest tests.test_public_install_contract -v` on v1.0.0 produced six failing tests and nine failed assertions for the intended missing installation behavior; the wrong-identity control was rejected.
 - GREEN evidence: the focused command passed 7 tests after the minimal package and documentation changes.
 - Refactor or exception: no production refactor was needed; the v1.0.x validator and workflow remain unchanged, while the new self-test reuses their public modules.
-- Fresh verification: `python3 -B -m unittest discover -s tests -v` passed 38 tests; Plugin validation, Skill quick validation, two legacy complete SDD gates, bundled self-test, Codex CLI help, and `git diff --check` all returned zero.
-- Realistic outcome check: the repository root passed the Codex Plugin validator and its exact package-relative self-test scaffolded and validated a complete SDD; isolated installed-cache execution and public Git installation remain explicit lifecycle and post-release gates rather than inferred results.
+- Fresh verification: `python3 -B -m unittest discover -s tests -v` passed 38 tests; Plugin validation, Skill quick validation, two legacy complete SDD gates, bundled self-test, Codex CLI help, and `git diff --check` all returned zero. Ariadne independence and 1.0.1 promotion dry-run also passed.
+- Realistic outcome check: Ariadne built the allowlisted artifact, installed it into a fresh isolated profile as the sole enabled `daedalus@ariadne-standalone` 1.0.1 Plugin, verified installed bytes, and passed its installed-cache self-test. Public Git installation remains the post-release outer oracle rather than an inferred result.
