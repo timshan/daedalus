@@ -6,7 +6,7 @@ status: complete
 owner: Codex
 date: 2026-08-10
 last_verified: 2026-08-11
-target_path: D:\project\daedalus
+target_path: public repository root
 target_repository: https://github.com/timshan/daedalus
 ---
 
@@ -47,7 +47,7 @@ target_repository: https://github.com/timshan/daedalus
 | OUT-005 | 產物可獨立安裝與維護 | Skill quick validation、stdlib unit tests、無 runtime dependency |
 | OUT-006 | 對抗審查通過 | w5:p3 最終 REPORT verdict 為 PASS，無未關閉 blocker／high／medium |
 | OUT-007 | 專案只以 main 發佈 | local／remote default branch 均為 main，沒有額外 branch |
-| OUT-008 | D 槽專案與已發佈 commit 一致 | D:\project\daedalus 的 HEAD、clean status 與 remote URL 驗證 |
+| OUT-008 | 發佈專案與已發佈 commit 一致 | release repository 的 HEAD、clean status 與 remote URL 驗證 |
 
 ## 3. Requirements
 
@@ -274,7 +274,7 @@ Scripts 不執行網路、shell、Git 或外部程式；測試使用 temporary d
 
 1. 完成 unit／integration／forward tests。
 2. 由 w5:p3 對完整 repository 做 scoped review，確認 contract 與 source integrity。
-3. 僅在 PASS 後把 reviewed tree 複製到 D:\project\daedalus，初始化唯一的 main。
+3. 僅在 PASS 後把 reviewed tree 放入 release repository，初始化唯一的 main。
 4. 在 D 槽 checkout 重跑 final validation，建立單一 main commit。
 5. 建立 public GitHub repository 並直接 push main，不建立 PR 或其他 branch。
 6. 讀回 default branch、remote heads、clean status 與 HEAD 一致性。
@@ -301,5 +301,5 @@ Scripts 不執行網路、shell、Git 或外部程式；測試使用 temporary d
 - Fresh verification: On 2026-08-11, the 29-test suite passed; Skill Creator `quick_validate.py skills/daedalus` returned `Skill is valid!`; the project ready gate returned `valid: true`; and both retained forward fixtures still passed their complete gates after the validator revision.
 - Forward tests: A fresh lite task preserved payload-key case with 2 tests passing and a valid lite complete gate. A fresh standard Checkout／PaymentGateway task added an idempotency contract with 3 tests passing, `compileall` exit 0, necessary sequence UML, and a valid standard complete gate. The nested agents also loaded global Eureka PDCA／SessionStart context and consumed approximately 64k and 96k tokens; review must treat this as evaluation contamination and a proportionality risk rather than attributing all overhead to Daedalus.
 - Adversarial review: Existing reviewer `w5:p3` R1b returned REVISE with R-01 blocker, R-02 high, R-03／R-04 medium, and optional R-05 low. After TDD fixes, R2 returned PASS and independently closed R-01～R-04 with 29 tests; no blocker／high／medium finding remains. Both rounds passed report contract and source／runtime integrity. R1's four unapproved read-only Git commands were corrected and disclosed in its report; R2 ran zero unapproved commands. R-05 remains an accepted, documented low risk for explicit `--force` only.
-- GitHub publication: The reviewed tree was copied to `D:\project\daedalus`, initialized directly as main, committed as `2398c57`, and pushed to the public `https://github.com/timshan/daedalus`. GitHub readback confirmed visibility PUBLIC, default branch main, and exactly one remote head (`refs/heads/main`). After this completion-evidence commit is pushed, controller checks must again confirm local HEAD equals remote main and the D checkout is clean; the exact final hash is recorded in the Eureka PDCA log to avoid a self-referential commit hash.
+- GitHub publication: The reviewed tree was placed in the release repository, initialized directly as main, committed as `2398c57`, and pushed to the public `https://github.com/timshan/daedalus`. GitHub readback confirmed visibility PUBLIC, default branch main, and exactly one remote head (`refs/heads/main`). After this completion-evidence commit is pushed, controller checks must again confirm local HEAD equals remote main and the release checkout is clean; the exact final hash is recorded in the Eureka PDCA log to avoid a self-referential commit hash.
 - Remaining risks: The validator proves structure rather than design truth; forward tests were contaminated by global hooks and are not a clean cost benchmark; explicit `init_sdd.py --force` follows an existing symlink; and existing reviewer mode cannot prevent previously accumulated reads or unapproved read-only commands. These are documented residual limitations, not unresolved blocker／high／medium findings.

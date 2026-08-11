@@ -1,0 +1,20 @@
+{
+  "name": "daedalus",
+  "interface": {
+    "displayName": "Daedalus"
+  },
+  "plugins": [
+    {
+      "name": "daedalus",
+      "source": {
+        "source": "local",
+        "path": "."
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

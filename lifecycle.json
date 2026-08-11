@@ -1,9 +1,22 @@
 {
   "plugin_path": ".",
+  "package_paths": [
+    ".codex-plugin",
+    "LICENSE",
+    "skills"
+  ],
   "discovery_roots": [
     "~/.codex/skills",
     "~/.agents/skills"
   ],
+  "independence": {
+    "standalone_checks": [
+      [
+        "python3",
+        "skills/daedalus/scripts/self_test.py"
+      ]
+    ]
+  },
   "checks": [
     [
       "python3",
@@ -25,6 +38,13 @@
       "python3",
       "skills/daedalus/scripts/validate_sdd.py",
       "docs/sdd/DAEDALUS-PLUGIN-001.md",
+      "--phase",
+      "complete"
+    ],
+    [
+      "python3",
+      "skills/daedalus/scripts/validate_sdd.py",
+      "docs/sdd/DAEDALUS-INSTALL-HOTFIX-003.md",
       "--phase",
       "complete"
     ]

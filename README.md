@@ -20,24 +20,25 @@ itself, or write external state without separate authorization.
 
 ## Repository layout
 
-- .codex-plugin/plugin.json — formal Plugin identity and SemVer.
-- skills/daedalus/ — Skill payload packaged by the Plugin.
-- lifecycle.json — repository gates used by skill-lifecycle-control.
-- docs/SDD.md — the design and acceptance baseline used to build this repository.
-- tests/ — standard-library contract tests for scripts and Skill packaging.
+- `.agents/plugins/marketplace.json` — public marketplace identity and root Plugin source.
+- `.codex-plugin/plugin.json` — formal Plugin identity and SemVer.
+- `skills/daedalus/` — Skill payload packaged by the Plugin.
+- `lifecycle.json` — immutable package boundary and repository checks.
+- `docs/` — design and acceptance evidence.
+- `CHANGELOG.md` — released project changes.
+- `tests/` — standard-library contract tests for scripts and Skill packaging.
 
-## Install the formal Plugin
+## Install from GitHub
 
-Daedalus development source is not copied into Codex discovery paths. After promotion by
-`D:\project\skill-lifecycle-control`, install the immutable local formal package:
+Register the public repository at `main`, then install Daedalus from its marketplace:
 
 ~~~bash
-codex plugin marketplace add /mnt/d/project/skill-lifecycle-control/channels/formal
-codex plugin add daedalus@skill-formal
+codex plugin marketplace add timshan/daedalus --ref main
+codex plugin add daedalus@daedalus
 ~~~
 
-The public GitHub Release contains the exact same formal ZIP and SHA-256 checksum. Restart or open
-a new Codex session after installation. Invoke it explicitly with a request such as:
+Restart or open a new Codex session after installation. Invoke it explicitly with a request such
+as:
 
 ~~~text
 Use $daedalus to add this API integration with a risk-tiered SDD and test-first slices.
@@ -64,8 +65,11 @@ engineering judgment are correct.
 
 ~~~bash
 python3 -m unittest discover -s tests -v
-python3 /path/to/skill-creator/scripts/quick_validate.py skills/daedalus
+python3 skills/daedalus/scripts/self_test.py
 ~~~
+
+The bundled self-test scaffolds a fresh standard SDD and validates a completed example using only
+the installed Daedalus payload and Python's standard library.
 
 ### Forward-test provenance
 

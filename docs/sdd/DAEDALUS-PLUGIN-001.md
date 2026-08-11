@@ -23,7 +23,7 @@ Current: the repository is a valid standalone Skill repository on `main`; it has
 | Outcome ID | Observable expected result | Evidence |
 |---|---|---|
 | OUT-001 | Codex Plugin tooling accepts the repository payload | Plugin validator and Skill validator pass. |
-| OUT-002 | Development and formal installation are separated | README uses the `skill-formal` marketplace and contains no direct copy instruction. |
+| OUT-002 | Development and formal installation are separated | README uses an immutable formal marketplace and contains no direct copy instruction. |
 | OUT-003 | Formal promotion audits legacy discovery roots | `lifecycle.json` includes both standalone Skill roots and controller regression proves the wiring. |
 
 ## Requirements
@@ -43,7 +43,7 @@ Current: the repository is a valid standalone Skill repository on `main`; it has
 ## Constraints, assumptions, and unknowns
 
 - Constraint: Keep exactly the two permanent branches selected by the lifecycle policy: `develop` and `main`.
-- Assumption: The non-default `skill-formal` marketplace is generated and activated by the lifecycle controller.
+- Assumption: A non-default immutable formal marketplace is generated and activated by the lifecycle controller.
 - Unknown: Universal public Plugin-directory submission remains outside this migration; GitHub Release is the publication boundary.
 
 ## Options and decision
@@ -56,7 +56,7 @@ Current: the repository is a valid standalone Skill repository on `main`; it has
 
 ## Design and contracts
 
-The Plugin manifest discovers `skills/daedalus`. `lifecycle.json` declares the repository root as the payload, executes all existing tests plus both completed SDD gates, and audits `~/.codex/skills` and `~/.agents/skills`. The central controller promotes the clean `develop` commit to `main`, produces `formal/v1.0.0`, and activates the exact artifact through `skill-formal`.
+The Plugin manifest discovers `skills/daedalus`. `lifecycle.json` declares the repository root as the payload, executes all existing tests plus both completed SDD gates, and audits `~/.codex/skills` and `~/.agents/skills`. The lifecycle controller promotes the clean `develop` commit to `main`, produces `formal/v1.0.0`, and activates the exact artifact through an immutable formal marketplace.
 
 ## Necessary UML
 
@@ -84,7 +84,7 @@ Outer acceptance or contract oracle: repository unit tests, official Plugin and 
 | Requirement | Acceptance | Test | Implementation | Evidence |
 |---|---|---|---|---|
 | REQ-001 | AC-001 | tests/test_skill_contract.py | .codex-plugin/plugin.json | Plugin validator passed in staging. |
-| REQ-002 | AC-002 | skill-lifecycle-control/tests/test_git_gates.py | lifecycle.json | Discovery-root regression passed. |
+| REQ-002 | AC-002 | lifecycle controller discovery regression | lifecycle.json | Discovery-root regression passed. |
 | REQ-003 | AC-003 | tests/test_skill_contract.py | README.md | README contract passed. |
 | REQ-004 | AC-004 | Git tag inspection | legacy-standalone-20260811 | Tag recorded at pre-migration commit 0afd87e. |
 
