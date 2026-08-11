@@ -1,0 +1,4 @@
+interface:
+  display_name: "Daedalus"
+  short_description: "Design first, test first, verify with evidence"
+  default_prompt: "Use $daedalus to plan this code change with a risk-tiered SDD, necessary UML, and test-first implementation."
