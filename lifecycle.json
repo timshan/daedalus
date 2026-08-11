@@ -1,0 +1,32 @@
+{
+  "plugin_path": ".",
+  "discovery_roots": [
+    "~/.codex/skills",
+    "~/.agents/skills"
+  ],
+  "checks": [
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "tests",
+      "-v"
+    ],
+    [
+      "python3",
+      "skills/daedalus/scripts/validate_sdd.py",
+      "docs/SDD.md",
+      "--phase",
+      "complete"
+    ],
+    [
+      "python3",
+      "skills/daedalus/scripts/validate_sdd.py",
+      "docs/sdd/DAEDALUS-PLUGIN-001.md",
+      "--phase",
+      "complete"
+    ]
+  ]
+}

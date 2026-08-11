@@ -1,0 +1,34 @@
+{
+  "name": "daedalus",
+  "version": "1.0.0",
+  "description": "Risk-tiered SDD, necessary UML, and test-first software development workflow.",
+  "author": {
+    "name": "Tim Shan",
+    "url": "https://github.com/timshan"
+  },
+  "homepage": "https://github.com/timshan/daedalus",
+  "repository": "https://github.com/timshan/daedalus",
+  "license": "MIT",
+  "keywords": [
+    "sdd",
+    "tdd",
+    "uml",
+    "software-development"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Daedalus",
+    "shortDescription": "Design first, test first, verify with evidence",
+    "longDescription": "Build software through proportional SDD, necessary UML, vertical TDD slices, and fresh verification evidence.",
+    "developerName": "Tim Shan",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/timshan/daedalus",
+    "defaultPrompt": [
+      "Use $daedalus to plan and implement this change with SDD and TDD."
+    ]
+  }
+}

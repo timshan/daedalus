@@ -20,19 +20,24 @@ itself, or write external state without separate authorization.
 
 ## Repository layout
 
-- skills/daedalus/ — installable Skill.
+- .codex-plugin/plugin.json — formal Plugin identity and SemVer.
+- skills/daedalus/ — Skill payload packaged by the Plugin.
+- lifecycle.json — repository gates used by skill-lifecycle-control.
 - docs/SDD.md — the design and acceptance baseline used to build this repository.
 - tests/ — standard-library contract tests for scripts and Skill packaging.
 
-## Install
+## Install the formal Plugin
 
-Copy the Skill folder into the Codex skills directory:
+Daedalus development source is not copied into Codex discovery paths. After promotion by
+`D:\project\skill-lifecycle-control`, install the immutable local formal package:
 
 ~~~bash
-cp -R skills/daedalus "$HOME/.codex/skills/daedalus"
+codex plugin marketplace add /mnt/d/project/skill-lifecycle-control/channels/formal
+codex plugin add daedalus@skill-formal
 ~~~
 
-Restart or open a new Codex session after installation. Invoke it explicitly with a request such as:
+The public GitHub Release contains the exact same formal ZIP and SHA-256 checksum. Restart or open
+a new Codex session after installation. Invoke it explicitly with a request such as:
 
 ~~~text
 Use $daedalus to add this API integration with a risk-tiered SDD and test-first slices.

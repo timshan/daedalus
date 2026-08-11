@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import json
 import unittest
 from pathlib import Path
 
@@ -10,6 +11,25 @@ SKILL = ROOT / "skills" / "daedalus"
 
 
 class SkillContractTests(unittest.TestCase):
+    def test_plugin_manifest_and_lifecycle_contract(self) -> None:
+        manifest = json.loads(
+            (ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8")
+        )
+        lifecycle = json.loads((ROOT / "lifecycle.json").read_text(encoding="utf-8"))
+
+        self.assertEqual(manifest["name"], "daedalus")
+        self.assertRegex(manifest["version"], r"^[0-9]+\.[0-9]+\.[0-9]+$")
+        self.assertEqual(lifecycle["plugin_path"], ".")
+        self.assertTrue(lifecycle["checks"])
+        self.assertEqual(
+            lifecycle["discovery_roots"], ["~/.codex/skills", "~/.agents/skills"]
+        )
+
+    def test_readme_uses_plugin_installation_not_direct_skill_copy(self) -> None:
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        self.assertIn("codex plugin", text)
+        self.assertNotIn('cp -R skills/daedalus "$HOME/.codex/skills/daedalus"', text)
+
     def test_skill_metadata_and_core_guards_exist(self) -> None:
         text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
 
