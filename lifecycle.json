@@ -33,6 +33,13 @@
       "docs/sdd/DAEDALUS-INDEPENDENCE-002.md",
       "--phase",
       "complete"
+    ],
+    [
+      "python3",
+      "skills/daedalus/scripts/validate_sdd.py",
+      "docs/sdd/DAEDALUS-INSTALL-HOTFIX-003.md",
+      "--phase",
+      "complete"
     ]
   ]
 }
